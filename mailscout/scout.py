@@ -193,7 +193,7 @@ class Scout:
     def find_valid_emails(self,
                         domain: str,
                         names: Optional[Union[str, List[str], List[List[str]]]] = None,
-                        check_email_catchall: Optional[bool] = None,
+                        check_catchall: Optional[bool] = None,
                         )-> List[str]:
         """
         Find valid email addresses for a given domain based on various checks.
@@ -202,13 +202,13 @@ class Scout:
         domain (str): The domain to check email addresses against.
         names (Union[str, List[str], List[List[str]]], optional): Names to generate email variants.
             Can be a single string, a list of strings, or a list of lists of strings.
-        check_email_catchall (bool, optional): Flag to check if the domain is a catch-all. Defaults to True.
+        check_catchall (bool, optional): Flag to check if the domain is a catch-all. Defaults to True.
                         Option to disable this check on a function level.
         Returns:
         List[str]: A list of valid email addresses found.
         """
         # Pre-flight checks
-        if check_email_catchall or (check_email_catchall is None and self.check_catchall):
+        if check_catchall or (check_catchall is None and self.check_catchall):
             if self.check_email_catchall(domain):
                 return []
 

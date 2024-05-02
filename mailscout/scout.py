@@ -193,6 +193,7 @@ class Scout:
     def find_valid_emails(self,
                         domain: str, 
                         names: Optional[Union[str, List[str], List[List[str]]]] = None, 
+                        check_catchall: Optional[bool] = None, 
                         )-> List[str]:
         """
         Find valid email addresses for a given domain based on various checks.
@@ -201,12 +202,13 @@ class Scout:
         domain (str): The domain to check email addresses against.
         names (Union[str, List[str], List[List[str]]], optional): Names to generate email variants. 
             Can be a single string, a list of strings, or a list of lists of strings.
-
+        check_catchall (bool, optional): Flag to check if the domain is a catch-all. Defaults to True.
+            Option to disable this check on a function level.
         Returns:
         List[str]: A list of valid email addresses found.
         """
         # Pre-flight checks
-        if self.check_catchall:
+        if check_catchall or (check_catchall is None and self.check_catchall):
             if self.check_email_catchall(domain):
                 return []
 
@@ -275,6 +277,7 @@ class Scout:
 
     def find_valid_emails_bulk(self,
         email_data: List[Dict[str, Union[str, List[str]]]], 
+        check_catchall: Optional[bool] = None, 
         ) -> List[Dict[str, Union[str, List[str], List[Dict[str, str]]]]]:
         """
         Find valid email addresses in bulk for multiple domains and names.
@@ -282,6 +285,8 @@ class Scout:
         Args:
         email_data (List[Dict[str, Union[str, List[str]]]]): A list of dictionaries, 
             each containing domain and optional names to check.
+        check_catchall (bool, optional): Flag to check if the domain is a catch-all. Defaults to True.
+            Option to disable this check on a function level.
 
         Returns:
         List[Dict[str, Union[str, List[str], List[Dict[str, str]]]]]: A list of dictionaries, 
@@ -302,7 +307,7 @@ class Scout:
                     check_prefixes_value = False if names else self.check_prefixes
 
                     valid_emails = self.find_valid_emails(
-                        domain, names
+                        domain, names, check_catchall
                     )
                     all_valid_emails.append({"domain": domain, "names": names, "valid_emails": valid_emails})
                 except Exception as e:

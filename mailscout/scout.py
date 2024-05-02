@@ -11,9 +11,9 @@ from unidecode import unidecode
 import re
 
 class Scout:
-    def __init__(self, 
-            check_variants: bool = True, 
-            check_prefixes: bool = True, 
+    def __init__(self,
+            check_variants: bool = True,
+            check_prefixes: bool = True,
             check_catchall: bool = True,
             normalize: bool = True,
             num_threads: int = 5,
@@ -31,7 +31,7 @@ class Scout:
             num_bulk_threads (int): Number of bulk email finder threads for concurrency. Defaults to 1.
             smtp_timeout (int): Timeout for the SMTP connection. Defaults to 2. (in seconds)
         """
-        
+
         self.check_variants = check_variants
         self.check_prefixes = check_prefixes
         self.check_catchall = check_catchall
@@ -97,9 +97,9 @@ class Scout:
         Returns:
         str: A normalized, email-friendly version of the name.
         """
-        # This function is a little bit overkill 
+        # This function is a little bit overkill
         # I will strip it over time with proper testing
-        
+
         # Basic normalization
         name = name.upper().lower()
 
@@ -191,22 +191,24 @@ class Scout:
 
 
     def find_valid_emails(self,
-                        domain: str, 
-                        names: Optional[Union[str, List[str], List[List[str]]]] = None, 
+                        domain: str,
+                        names: Optional[Union[str, List[str], List[List[str]]]] = None,
+                        check_email_catchall: Optional[bool] = None,
                         )-> List[str]:
         """
         Find valid email addresses for a given domain based on various checks.
 
         Args:
         domain (str): The domain to check email addresses against.
-        names (Union[str, List[str], List[List[str]]], optional): Names to generate email variants. 
+        names (Union[str, List[str], List[List[str]]], optional): Names to generate email variants.
             Can be a single string, a list of strings, or a list of lists of strings.
-
+        check_email_catchall (bool, optional): Flag to check if the domain is a catch-all. Defaults to True.
+                        Option to disable this check on a function level.
         Returns:
         List[str]: A list of valid email addresses found.
         """
         # Pre-flight checks
-        if self.check_catchall:
+        if check_email_catchall or (check_email_catchall is None and self.check_catchall):
             if self.check_email_catchall(domain):
                 return []
 
@@ -274,17 +276,17 @@ class Scout:
 
 
     def find_valid_emails_bulk(self,
-        email_data: List[Dict[str, Union[str, List[str]]]], 
+        email_data: List[Dict[str, Union[str, List[str]]]],
         ) -> List[Dict[str, Union[str, List[str], List[Dict[str, str]]]]]:
         """
         Find valid email addresses in bulk for multiple domains and names.
 
         Args:
-        email_data (List[Dict[str, Union[str, List[str]]]]): A list of dictionaries, 
+        email_data (List[Dict[str, Union[str, List[str]]]]): A list of dictionaries,
             each containing domain and optional names to check.
 
         Returns:
-        List[Dict[str, Union[str, List[str], List[Dict[str, str]]]]]: A list of dictionaries, 
+        List[Dict[str, Union[str, List[str], List[Dict[str, str]]]]]: A list of dictionaries,
             each containing the domain, names, and a list of valid emails found.
         """
         # Remove duplicates
@@ -335,7 +337,7 @@ class Scout:
             t.join()
 
         return all_valid_emails
-    
+
     def split_list_data(self, target):
         new_target = []
         for i in target:
